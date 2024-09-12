@@ -87,7 +87,7 @@ function userInput(event) { /* Handle user input */
   if (board[sq]) return;
   if (!setStone(sq, side, true)) return;
   drawBoard();
-  //setTimeout(function() { play(6); }, 10);
+  setTimeout(function() { play(); }, 10);
 }
 
 function initBoard() { /* Empty board, set offboard squares */
