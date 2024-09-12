@@ -15,7 +15,7 @@ function boardTensor() { /* Convert GUI board to katago model input tensor */
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
-      if (board[21 * (y+1) + (x+1)] == 0) bin_inputs[inputBufferChannels * (19 * y + x)] = 1.0;
+      /*if (board[21 * (y+1) + (x+1)] == 0)*/ bin_inputs[inputBufferChannels * (19 * y + x)] = 1.0;
       if (board[21 * (y+1) + (x+1)] == 1) {
         bin_inputs[inputBufferChannels * (19 * y + x) + 1] = 1.0;
         //bin_inputs[inputBufferChannels * (19 * y + x) + 18] = 1.0;
