@@ -48,8 +48,12 @@ async function play() { /* Query KataGo network */
       console.log(row);
     }
 
-    let bestSquare = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
-    setStone(bestSquare, side, true);
+    let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
+    let row_19 = Math.floor(best_19 / 19);
+    let col_19 = best_19 % 19;
+    console.log('19x19: ' + col_19 + ' ' + row_19)
+    let bestMove = 21 * (row_19+1) + (col_19+1);
+    setStone(bestMove, side, true);
     drawBoard();
   } catch (e) {
       console.log(e);
