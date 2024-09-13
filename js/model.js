@@ -23,12 +23,12 @@ function boardTensor() { /* Convert GUI board to katago model input tensor */
       if (board[sq_21x21] == BLACK || board[sq_21x21] == WHITE) {
         let libs = 0;
         count(sq_21x21, side);
-        libs = liberties.count;
+        libs = liberties.length;
         restoreBoard();
-        if (libs == 1) bin_inputs(inputBufferChannels * sq_19x19 + 3) = 1.0;
-        if (libs == 2) bin_inputs(inputBufferChannels * sq_19x19 + 4) = 1.0;
-        if (libs == 3) bin_inputs(inputBufferChannels * sq_19x19 + 5) = 1.0;
-        if (sq_19x19 == ko) bin_inputs(inputBufferChannels * sq_19x19 + 6) = 1.0;
+        if (libs == 1) bin_inputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
+        if (libs == 2) bin_inputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
+        if (libs == 3) bin_inputs[inputBufferChannels * sq_19x19 + 5] = 1.0;
+        if (sq_19x19 == ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
       }
     }
   } return bin_inputs;
