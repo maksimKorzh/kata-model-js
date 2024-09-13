@@ -1,2 +1,3 @@
-# kata-model-js
-Play with bare KataGo model in web browser
+# Kata Model JS
+Play Go with bare KataGo model in web browser
+
