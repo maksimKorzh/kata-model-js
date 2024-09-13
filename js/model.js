@@ -48,7 +48,7 @@ async function play() { /* Query KataGo network */
     const policyArray = await policyTensor.slice([0, 0, 0], [1, 1, 361]).array();
     const flatPolicyArray = policyArray[0][0]; // Flatten to 1D array
 
-    console.log('Policy probabilities in 19x19 board format:');
+    results[2].print()
     for (let y = 0; y < 19; y++) {
       let row = flatPolicyArray.slice(19 * y, 19 * (y + 1)).map(p => p.toFixed(2)).join(' ');
       console.log(row);
@@ -57,11 +57,19 @@ async function play() { /* Query KataGo network */
     let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
     let row_19 = Math.floor(best_19 / 19);
     let col_19 = best_19 % 19;
-    console.log('best move: ' + col_19 + ' ' + row_19)
+
+    let evaluations = results[2];  // Assuming results[2] is the 3D array
+    let flatEvaluations = evaluations.dataSync(2);
+    let bestScore = flatEvaluations[best_19];
+    let winRate = ((bestScore - (-1)) / (1 - (-1))) * 100;
+
+    console.log('Best move: ' + col_19 + ' ' + row_19)
+    console.log("Win rate:", winRate);
+    
     let bestMove = 21 * (row_19+1) + (col_19+1);
     setStone(bestMove, side, true);
     drawBoard();
   } catch (e) {
-      console.log(e);
+    console.log(e);
   }
 }
