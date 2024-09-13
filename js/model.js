@@ -15,14 +15,20 @@ function boardTensor() { /* Convert GUI board to katago model input tensor */
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
-      /*if (board[21 * (y+1) + (x+1)] == 0)*/ bin_inputs[inputBufferChannels * (19 * y + x)] = 1.0;
-      if (board[21 * (y+1) + (x+1)] == 1) {
-        bin_inputs[inputBufferChannels * (19 * y + x) + 1] = 1.0;
-        //bin_inputs[inputBufferChannels * (19 * y + x) + 18] = 1.0;
-      }
-      if (board[21 * (y+1) + (x+1)] == 2) {
-        bin_inputs[inputBufferChannels * (19 * y + x) + 2] = 1.0;
-        //bin_inputs[inputBufferChannels * (19 * y + x) + 19] = 1.0;
+      sq_19x19 = (19 * y + x);
+      sq_21x21 = (21 * (y+1) + (x+1))
+      bin_inputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
+      if (board[sq_21x21] == BLACK) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
+      if (board[sq_21x21] == WHITE) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
+      if (board[sq_21x21] == BLACK || board[sq_21x21] == WHITE) {
+        let libs = 0;
+        count(sq_21x21, side);
+        libs = liberties.count;
+        restoreBoard();
+        if (libs == 1) bin_inputs(inputBufferChannels * sq_19x19 + 3) = 1.0;
+        if (libs == 2) bin_inputs(inputBufferChannels * sq_19x19 + 4) = 1.0;
+        if (libs == 3) bin_inputs(inputBufferChannels * sq_19x19 + 5) = 1.0;
+        if (sq_19x19 == ko) bin_inputs(inputBufferChannels * sq_19x19 + 6) = 1.0;
       }
     }
   } return bin_inputs;
@@ -51,7 +57,7 @@ async function play() { /* Query KataGo network */
     let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
     let row_19 = Math.floor(best_19 / 19);
     let col_19 = best_19 % 19;
-    console.log('19x19: ' + col_19 + ' ' + row_19)
+    console.log('best move: ' + col_19 + ' ' + row_19)
     let bestMove = 21 * (row_19+1) + (col_19+1);
     setStone(bestMove, side, true);
     drawBoard();
