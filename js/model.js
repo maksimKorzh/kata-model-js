@@ -6,17 +6,13 @@ const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
 
 // PARSE PARAMS
-const urlParams = new URLSearchParams(window.location.search);
-const computer_side = urlParams.get('side');
-const komi = urlParams.get('komi');
-
 try {
-  global_inputs[5] = -(parseInt(komi) / 20.0)-0.33;
+  const urlParams = new URLSearchParams(window.location.search);
+  const computer_side = urlParams.get('side');
+  komi = parseFloat(urlParams.get('komi'));
+  global_inputs[5] = komi / 20.0
   if (computer_side == 'black') play();
-} catch (e) { console.log(e); }
-
-global_inputs[6] = 1; // positional ko
-global_inputs[7] = 0.5; // positional ko
+} catch (e) { komi = 6.5; }
 
 // QUERY MODEL
 function boardTensor() { /* Convert GUI board to katago model input tensor */
@@ -62,10 +58,14 @@ async function play() { /* Query KataGo network */
     let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
     let row_19 = Math.floor(best_19 / 19);
     let col_19 = best_19 % 19;
-    let scoreLead = (flatScores[2]*20).toFixed(2);
+    let scoreLead = (flatScores[2]*20 + komi).toFixed(2);
     document.getElementById('stats').innerHTML = (scoreLead > 0 ? 'Black leads by ': 'White leads by ') + Math.abs(scoreLead) + ' points';
     let bestMove = 21 * (row_19+1) + (col_19+1);
-    if (!setStone(bestMove, side, false)) alert('Pass');
+    if (!setStone(bestMove, side, false)) {
+      alert('Pass');
+      side = 3 - side;
+      ko = 0;
+    }
     drawBoard();
   } catch (e) {
     console.log(e);
