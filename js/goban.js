@@ -125,7 +125,6 @@ const Goban = function(params) {
       'side': color,
       'move': sq,
       'board': JSON.parse(JSON.stringify(board)),
-      'lastMove': sq,
       'ko': ko
     });
     moveCount = history.length-1;
@@ -152,7 +151,6 @@ const Goban = function(params) {
       'side': side,
       'move': EMPTY,
       'board': JSON.parse(JSON.stringify(board)),
-      'lastMove': -1,
       'ko': ko
     });
     ko = EMPTY;
@@ -291,7 +289,6 @@ const Goban = function(params) {
       'side': WHITE,
       'move': EMPTY,
       'board': JSON.parse(JSON.stringify(board)),
-      'lastMove': -1,
       'ko': EMPTY
     });
     moveCount = history.length-1;
@@ -306,13 +303,13 @@ const Goban = function(params) {
     side: side,
     ko: ko,
     position: board,
+    history: history,
     liberties: liberties,
     count: function(sq, color) { return count(sq, color); },
     restore: function() { return restoreBoard(); },
     play: function(sq, color, user) { return setStone(sq, color, user); },
     pass: function() { return pass(); },
     refresh: function() { return drawBoard(); },
-    history: function() { return history; },
     firstMove: function() { return firstMove(); },
     prevFewMoves: function(few) { return prevFewMoves(few); },
     prevMove: function() { return prevMove(); },
