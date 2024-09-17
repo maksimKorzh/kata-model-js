@@ -20,13 +20,15 @@ setTimeout( function() {
 // QUERY MODEL
 function boardTensor() { /* Convert GUI goban.position to katago model input tensor */
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
+  let katago = computerSide;
+  let player = (3-computerSide);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
       sq_19x19 = (19 * y + x);
       sq_21x21 = (21 * (y+1) + (x+1))
       bin_inputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
-      if (goban.position[sq_21x21] == goban.BLACK) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
-      if (goban.position[sq_21x21] == goban.WHITE) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
+      if (goban.position[sq_21x21] == katago) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
+      if (goban.position[sq_21x21] == player) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
       if (goban.position[sq_21x21] == goban.BLACK || goban.position[sq_21x21] == goban.WHITE) {
         let libs_black = 0;
         let libs_white = 0;
@@ -36,13 +38,13 @@ function boardTensor() { /* Convert GUI goban.position to katago model input ten
         goban.count(sq_21x21, goban.WHITE);
         libs_white = goban.liberties.length;
         goban.restore();
-        if (libs_black == 1 || libs_white == 1) bin_inputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
-        if (libs_black == 2 || libs_white == 2) bin_inputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
-        if (libs_black == 3 || libs_white == 3) bin_inputs[inputBufferChannels * sq_19x19 + 5] = 1.0;
+        //if (libs_black == 1 || libs_white == 1) bin_inputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
+        //if (libs_black == 2 || libs_white == 2) bin_inputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
+        //if (libs_black == 3 || libs_white == 3) bin_inputs[inputBufferChannels * sq_19x19 + 5] = 1.0;
       }
     }
   }
-  if (sq_19x19 == goban.ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  /*if (sq_19x19 == goban.ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
   let moveIndex = goban.history.length-1;
   if (moveIndex >= 1 && goban.history[moveIndex-1].side == goban.WHITE) {
     let prevLoc1 = goban.history[moveIndex-1].move;
@@ -78,7 +80,7 @@ function boardTensor() { /* Convert GUI goban.position to katago model input ten
         }
       }
     }
-  }
+  }*/
 
   let selfKomi = (computerSide == goban.WHITE ? komi+1 : -komi);
   global_inputs[5] = selfKomi / 20.0
