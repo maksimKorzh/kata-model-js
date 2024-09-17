@@ -102,8 +102,8 @@ async function play() { /* Query KataGo network */
     let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
     let row_19 = Math.floor(best_19 / 19);
     let col_19 = best_19 % 19;
-    let scoreLead = (flatScores[2]*20 + komi).toFixed(2);
-    document.getElementById('stats').innerHTML = (scoreLead > 0 ? 'Black leads by ': 'White leads by ') + Math.abs(scoreLead) + ' points';
+    let scoreLead = (flatScores[2]*20).toFixed(2);
+    document.getElementById('stats').innerHTML = (scoreLead < 0 ? 'Black leads by ': 'White leads by ') + Math.abs(scoreLead) + ' points';
     let bestMove = 21 * (row_19+1) + (col_19+1);
     if (!goban.play(bestMove, computerSide, false)) {
       alert('Pass');
