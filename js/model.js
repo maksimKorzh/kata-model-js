@@ -4,39 +4,48 @@ const inputBufferLength = 19 * 19;
 const inputBufferChannels = 22;
 const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
+var computerSide;
+var moveIndex = 0;
 
 // PARSE PARAMS
-try {
-  const urlParams = new URLSearchParams(window.location.search);
-  const computer_side = urlParams.get('side');
-  komi = parseFloat(urlParams.get('komi'));
-  global_inputs[5] = komi / 20.0
-  if (computer_side == 'black') play();
-} catch (e) { komi = 6.5; }
+setTimeout( function() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    computer_side = urlParams.get('side') == 'black' ? goban.BLACK : goban.WHITE;
+    komi = parseFloat(urlParams.get('komi'));
+    global_inputs[5] = komi / 20.0
+    if (computer_side == goban.BLACK) play();
+  } catch (e) { komi = 6.5; }
+});
 
 // QUERY MODEL
-function boardTensor() { /* Convert GUI board to katago model input tensor */
+function boardTensor() { /* Convert GUI goban.position to katago model input tensor */
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
       sq_19x19 = (19 * y + x);
       sq_21x21 = (21 * (y+1) + (x+1))
       bin_inputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
-      if (board[sq_21x21] == BLACK) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
-      if (board[sq_21x21] == WHITE) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
-      if (board[sq_21x21] == BLACK || board[sq_21x21] == WHITE) {
+      //bin_inputs[inputBufferChannels * sq_19x19 + 9] = 1.0;
+      //bin_inputs[inputBufferChannels * sq_19x19 + 10] = 1.0;
+      //bin_inputs[inputBufferChannels * sq_19x19 + 11] = 1.0;
+      //bin_inputs[inputBufferChannels * sq_19x19 + 12] = 1.0;
+      //bin_inputs[inputBufferChannels * sq_19x19 + 13] = 1.0;
+      if (goban.position[sq_21x21] == goban.BLACK) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
+      if (goban.position[sq_21x21] == goban.WHITE) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
+      if (goban.position[sq_21x21] == goban.BLACK || goban.position[sq_21x21] == goban.WHITE) {
         let libs_black = 0;
         let libs_white = 0;
-        count(sq_21x21, BLACK);
-        libs_black = liberties.length;
-        restoreBoard();
-        count(sq_21x21, WHITE);
-        libs_white = liberties.length;
-        restoreBoard();
+        goban.count(sq_21x21, goban.BLACK);
+        libs_black = goban.liberties.length;
+        goban.restore();
+        goban.count(sq_21x21, goban.WHITE);
+        libs_white = goban.liberties.length;
+        goban.restore();
         if (libs_black == 1 || libs_white == 1) bin_inputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
         if (libs_black == 2 || libs_white == 2) bin_inputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
         if (libs_black == 3 || libs_white == 3) bin_inputs[inputBufferChannels * sq_19x19 + 5] = 1.0;
-        if (sq_19x19 == ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+        if (sq_19x19 == goban.ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
       }
     }
   } return bin_inputs;
@@ -61,12 +70,11 @@ async function play() { /* Query KataGo network */
     let scoreLead = (flatScores[2]*20 + komi).toFixed(2);
     document.getElementById('stats').innerHTML = (scoreLead > 0 ? 'Black leads by ': 'White leads by ') + Math.abs(scoreLead) + ' points';
     let bestMove = 21 * (row_19+1) + (col_19+1);
-    if (!setStone(bestMove, side, false)) {
+    if (!goban.play(bestMove, computer_side, false)) {
       alert('Pass');
-      side = 3 - side;
-      ko = 0;
+      goban.pass();
     }
-    drawBoard();
+    goban.refresh();
   } catch (e) {
     console.log(e);
   }
