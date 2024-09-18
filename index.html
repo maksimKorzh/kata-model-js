@@ -2,22 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=0.54">
   <title>Kata Model JS</title>
 </head>
 <body>
   <style>
-    body {
-      margin: 0;
-      height: 100vh;
+    .container {
+      margin-top: 3%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
     }
   </style>
+  <div class="container">
+  <div id="stats" style="font-size: 30px; margin-bottom: -20px;">KataNet: b10c128-s1141046784-d204142634</div>
   <div id=goban></div>
-  <div id="stats" style="font-size: 30px;">KataNet: b10c128-s1141046784-d204142634</div>
+  <div style="display: flex;">
+    <button onclick="play()" style="width: 162px; font-size: 30px;">PASS</button>
+    <button onclick="play()" style="width: 162px; font-size: 30px;">PLAY</button>
+    <input type="text" value="6.5" style="width: 30px; font-size: 20px;"/>
+    <button onclick="goban.undoMove()" style="width: 162px; font-size: 30px;">UNDO</button>
+    <button onclick="play()" style="width: 162px; font-size: 30px;">SAVE</button>
+  </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
   <script src="js/goban.js"></script>
   <script src="js/model.js"></script>
@@ -25,7 +33,7 @@
     const goban = new Goban({
       'size': 19,
       'width': 800,
-      'response': function() { play(); }
+      //'response': function() { play(); }
     });
   </script>
 </body>

@@ -121,10 +121,10 @@ const Goban = function(params) {
     ko = EMPTY;
     board[sq] = color;
     history.push({
-      'ply': moveCount,
+      'ply': moveCount+1,
       'side': color,
       'move': sq,
-      'board': JSON.parse(JSON.stringify(board)),
+      'board': JSON.stringify(board),
       'ko': ko
     });
     moveCount = history.length-1;
@@ -150,9 +150,10 @@ const Goban = function(params) {
       'ply': moveCount,
       'side': side,
       'move': EMPTY,
-      'board': JSON.parse(JSON.stringify(board)),
+      'board': JSON.stringify(board),
       'ko': ko
     });
+    moveCount = history.length-1;
     ko = EMPTY;
     side = 3 - side;
   }
@@ -213,10 +214,18 @@ const Goban = function(params) {
 
   function loadHistoryMove() {
     let move = history[moveCount];
-    board = move.board;
+    board = JSON.parse(move.board);
+    side = (3-move.side);
     ko = move.ko;
     userMove = move.lastMove;
     drawBoard();
+  }
+
+  function undoMove() {
+    if (moveCount == 0) return;
+    moveCount--;
+    history.pop();
+    loadHistoryMove();
   }
 
   function firstMove() {
@@ -274,7 +283,6 @@ const Goban = function(params) {
     let container = document.getElementById('goban');
     canvas = document.createElement('canvas');
     canvas.style="margin-bottom: -3%;";
-    container.style="display: flex; flex-direction: column; align-items: center";
     container.appendChild(canvas);
     canvas.width = params.width;
     canvas.height = params.width;
@@ -285,11 +293,11 @@ const Goban = function(params) {
     clearBoard();
     drawBoard();
     history.push({
-      'ply': moveCount,
+      'ply': 0,
       'side': WHITE,
       'move': EMPTY,
-      'board': JSON.parse(JSON.stringify(board)),
-      'ko': EMPTY
+      'board': JSON.stringify(board),
+      'ko': ko
     });
     moveCount = history.length-1;
     if (params.sgf) loadSgf(params.sgf);
@@ -300,16 +308,17 @@ const Goban = function(params) {
     init: init(),
     BLACK: BLACK,
     WHITE: WHITE,
-    side: side,
-    ko: ko,
     position: board,
     history: history,
     liberties: liberties,
+    side: function() { return side; },
+    ko: function() { return ko; },
     count: function(sq, color) { return count(sq, color); },
     restore: function() { return restoreBoard(); },
     play: function(sq, color, user) { return setStone(sq, color, user); },
     pass: function() { return pass(); },
     refresh: function() { return drawBoard(); },
+    undoMove: function() { return undoMove(); },
     firstMove: function() { return firstMove(); },
     prevFewMoves: function(few) { return prevFewMoves(few); },
     prevMove: function() { return prevMove(); },

@@ -4,24 +4,14 @@ const inputBufferLength = 19 * 19;
 const inputBufferChannels = 22;
 const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
-var computerSide;
-var moveIndex = 0;
-
-// PARSE PARAMS
-setTimeout( function() {
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    computerSide = urlParams.get('side') == 'black' ? goban.BLACK : goban.WHITE;
-    komi = parseFloat(urlParams.get('komi'));
-    if (computerSide == goban.BLACK) play();
-  } catch (e) { komi = 6.5; }
-});
+var komi = 6.5;
+var computerSide = 2;
 
 // QUERY MODEL
-function boardTensor() { /* Convert GUI goban.position to katago model input tensor */
-  const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
+function inputTensor() { /* Convert GUI goban.position to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
+  const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
       sq_19x19 = (19 * y + x);
@@ -44,7 +34,7 @@ function boardTensor() { /* Convert GUI goban.position to katago model input ten
       }
     }
   }
-  if (sq_19x19 == goban.ko) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
+  if (sq_19x19 == goban.ko()) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
   let moveIndex = goban.history.length-1;
   if (moveIndex >= 1 && goban.history[moveIndex-1].side == player) {
     let prevLoc1 = goban.history[moveIndex-1].move;
@@ -87,7 +77,9 @@ function boardTensor() { /* Convert GUI goban.position to katago model input ten
 }
 
 async function play() { /* Query KataGo network */
-  const bin_inputs = boardTensor();
+  document.getElementById('stats').innerHTML = 'KataNet is thinking...';
+  computerSide = goban.side();
+  const bin_inputs = inputTensor();
   try {
     tf.setBackend("cpu");
     const model = await tf.loadGraphModel("./models/b10c128-s1141046784-d204142634/model.json");
