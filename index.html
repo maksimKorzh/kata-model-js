@@ -19,7 +19,7 @@
   <div id="stats" style="font-size: 30px; margin-bottom: -20px;">KataNet: b10c128-s1141046784-d204142634</div>
   <div id=goban></div>
   <div style="display: flex;">
-    <button onclick="play()" style="width: 162px; font-size: 30px;">PASS</button>
+    <button onclick="goban.pass(); play();" style="width: 162px; font-size: 30px;">PASS</button>
     <button onclick="play()" style="width: 162px; font-size: 30px;">PLAY</button>
     <input type="text" value="6.5" style="width: 30px; font-size: 20px;"/>
     <button onclick="goban.undoMove()" style="width: 162px; font-size: 30px;">UNDO</button>
@@ -33,7 +33,7 @@
     const goban = new Goban({
       'size': 19,
       'width': 800,
-      //'response': function() { play(); }
+      'response': function() { play(); }
     });
   </script>
 </body>

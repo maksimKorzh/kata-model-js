@@ -147,7 +147,7 @@ const Goban = function(params) {
 
   function pass() {
     history.push({
-      'ply': moveCount,
+      'ply': moveCount+1,
       'side': side,
       'move': EMPTY,
       'board': JSON.stringify(board),
