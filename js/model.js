@@ -95,7 +95,9 @@ async function play() { /* Query KataGo network */
     let row_19 = Math.floor(best_19 / 19);
     let col_19 = best_19 % 19;
     let scoreLead = (flatScores[2]*20).toFixed(2);
-    document.getElementById('stats').innerHTML = (scoreLead < 0 ? 'Black leads by ': 'White leads by ') + Math.abs(scoreLead) + ' points';
+    let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
+    let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
     let bestMove = 21 * (row_19+1) + (col_19+1);
     if (!goban.play(bestMove, computerSide, false)) {
       alert('Pass');
