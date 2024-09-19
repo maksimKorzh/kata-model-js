@@ -8,7 +8,7 @@ var komi = 6.5;
 var computerSide = 2;
 
 // QUERY MODEL
-function inputTensor() { /* Convert GUI goban.position to katago model input tensor */
+function inputTensor() { /* Convert GUI goban.position() to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
@@ -17,16 +17,16 @@ function inputTensor() { /* Convert GUI goban.position to katago model input ten
       sq_19x19 = (19 * y + x);
       sq_21x21 = (21 * (y+1) + (x+1))
       bin_inputs[inputBufferChannels * sq_19x19 + 0] = 1.0;
-      if (goban.position[sq_21x21] == katago) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
-      if (goban.position[sq_21x21] == player) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
-      if (goban.position[sq_21x21] == katago || goban.position[sq_21x21] == player) {
+      if (goban.position()[sq_21x21] == katago) bin_inputs[inputBufferChannels * sq_19x19 + 1] = 1.0;
+      if (goban.position()[sq_21x21] == player) bin_inputs[inputBufferChannels * sq_19x19 + 2] = 1.0;
+      if (goban.position()[sq_21x21] == katago || goban.position()[sq_21x21] == player) {
         let libs_black = 0;
         let libs_white = 0;
         goban.count(sq_21x21, goban.BLACK);
-        libs_black = goban.liberties.length;
+        libs_black = goban.liberties().length;
         goban.restore();
         goban.count(sq_21x21, goban.WHITE);
-        libs_white = goban.liberties.length;
+        libs_white = goban.liberties().length;
         goban.restore();
         if (libs_black == 1 || libs_white == 1) bin_inputs[inputBufferChannels * sq_19x19 + 3] = 1.0;
         if (libs_black == 2 || libs_white == 2) bin_inputs[inputBufferChannels * sq_19x19 + 4] = 1.0;
@@ -35,33 +35,33 @@ function inputTensor() { /* Convert GUI goban.position to katago model input ten
     }
   }
   if (sq_19x19 == goban.ko()) bin_inputs[inputBufferChannels * sq_19x19 + 6] = 1.0;
-  let moveIndex = goban.history.length-1;
-  if (moveIndex >= 1 && goban.history[moveIndex-1].side == player) {
-    let prevLoc1 = goban.history[moveIndex-1].move;
+  let moveIndex = goban.history().length-1;
+  if (moveIndex >= 1 && goban.history()[moveIndex-1].side == player) {
+    let prevLoc1 = goban.history()[moveIndex-1].move;
     let x = prevLoc1 % 21;
     let y = Math.floor(prevLoc1 / 21);
     if (prevLoc1) bin_inputs[inputBufferChannels * (19 * y + x) + 9] = 1.0;
     else global_inputs[0] = 1.0;
-    if (moveIndex >= 2 && goban.history[moveIndex-2].side == katago) {
-      let prevLoc2 = goban.history[moveIndex-2].move;
+    if (moveIndex >= 2 && goban.history()[moveIndex-2].side == katago) {
+      let prevLoc2 = goban.history()[moveIndex-2].move;
       let x = prevLoc2 % 21;
       let y = Math.floor(prevLoc2 / 21);
       if (prevLoc2) bin_inputs[inputBufferChannels * (19 * y + x) + 10] = 1.0;
       else global_inputs[1] = 1.0;
-      if (moveIndex >= 3 && goban.history[moveIndex-3].side == player) {
-        let prevLoc3 = goban.history[moveIndex-3].move;
+      if (moveIndex >= 3 && goban.history()[moveIndex-3].side == player) {
+        let prevLoc3 = goban.history()[moveIndex-3].move;
         let x = prevLoc3 % 21;
         let y = Math.floor(prevLoc3 / 21);
         if (prevLoc3) bin_inputs[inputBufferChannels * (19 * y + x) + 11] = 1.0;
         else global_inputs[2] = 1.0;
-        if (moveIndex >= 4 && goban.history[moveIndex-4].side == katago) {
-          let prevLoc4 = goban.history[moveIndex-4].move;
+        if (moveIndex >= 4 && goban.history()[moveIndex-4].side == katago) {
+          let prevLoc4 = goban.history()[moveIndex-4].move;
           let x = prevLoc4 % 21;
           let y = Math.floor(prevLoc4 / 21);
           if (prevLoc4) bin_inputs[inputBufferChannels * (19 * y + x) + 12] = 1.0;
           else global_inputs[3] = 1.0;
-          if (moveIndex >= 5 && goban.history[moveIndex-5].side == player) {
-            let prevLoc5 = goban.history[moveIndex-5].move;
+          if (moveIndex >= 5 && goban.history()[moveIndex-5].side == player) {
+            let prevLoc5 = goban.history()[moveIndex-5].move;
             let x = prevLoc5 % 21;
             let y = Math.floor(prevLoc5 / 21);
             if (prevLoc5) { bin_inputs[inputBufferChannels * (19 * y + x) + 13] = 1.0; console.log('feature 13'); }
