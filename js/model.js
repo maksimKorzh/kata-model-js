@@ -4,16 +4,15 @@ const inputBufferLength = 19 * 19;
 const inputBufferChannels = 22;
 const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
-var komi = 6.5;
-var handicap = 0;
 var computerSide = 2;
 
 // PARSE PARAMS
 const urlParams = new URLSearchParams(window.location.search);
 try {
-  komi = parseFloat(urlParams.get('komi'));
-  handicap = parseInt(urlParams.get('handicap'));
-  setTimeout(function() { goban.handicap(handicap); }, 100);
+  setTimeout(function() {
+    if (urlParams.get('komi')) goban.setKomi(parseFloat(urlParams.get('komi')));
+    goban.handicap(parseInt(urlParams.get('handicap')));
+  }, 100);
 } catch (e) { console.log(e); }
 
 // QUERY MODEL
@@ -80,7 +79,7 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
       }
     }
   }
-  let selfKomi = (computerSide == goban.WHITE ? komi+1 : -komi);
+  let selfKomi = (computerSide == goban.WHITE ? goban.komi()+1 : -goban.komi());
   global_inputs[5] = selfKomi / 20.0
   return bin_inputs;
 }
