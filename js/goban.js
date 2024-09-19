@@ -229,7 +229,7 @@ const Goban = function(params) {
     board = JSON.parse(move.board);
     side = move.side;
     ko = move.ko;
-    userMove = move.lastMove;
+    userMove = move.move;
     drawBoard();
   }
 
@@ -277,11 +277,10 @@ const Goban = function(params) {
   }
 
   function loadSgf(sgf) {
-    let sgfLines = sgf.split('\n');
-    moves = sgfLines.slice(3, sgfLines.length).join(';').replace(/\s/g, '');
-    for (let move of moves.split(';')) {
+    for (let move of sgf.split(';')) {
       if (move.length) {
-        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { pass(); continue; }
+        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { continue; }
+        //if (move.charCodeAt(2) == ']') { pass(); continue; }
         let player = move[0] == 'B' ? BLACK : WHITE;
         let col = move.charCodeAt(2)-97;
         let row = move.charCodeAt(3)-97;
@@ -335,7 +334,7 @@ const Goban = function(params) {
     init: init(),
     BLACK: BLACK,
     WHITE: WHITE,
-    importSgf: function(sgf) { return loadSgf(); },
+    importSgf: function(sgf) { return loadSgf(sgf); },
     exportSgf: function() { return saveSgf(); },
     position: function() { return board; },
     setKomi: function(komiVal) { komi = komiVal; },
