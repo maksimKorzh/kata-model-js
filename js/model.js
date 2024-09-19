@@ -105,25 +105,31 @@ async function play() { /* Query KataGo network */
     let flatPolicyArray = await policyTensor.array();
     let scores = results[2];
     let flatScores = scores.dataSync(2);
-    let best_19 = flatPolicyArray.indexOf(Math.max.apply(Math, flatPolicyArray));
-    let row_19 = Math.floor(best_19 / 19);
-    let col_19 = best_19 % 19;
-    let scoreLead = (flatScores[2]*20).toFixed(2);
-    let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
-    let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
-    if (level == 'kyu') {
-      scoreLead -= (20+goban.komi());
-      scoreLead = scoreLead.toFixed(2);
-      katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
-      playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
+    let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
+    let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 5);
+    let topMoves = [];
+    for (let move of topPolicies) topMoves.push(flatPolicyArray.indexOf(move));
+    for (let move = 0; move < topMoves.length; move++) {
+      let best_19 = topMoves[move];
+      let row_19 = Math.floor(best_19 / 19);
+      let col_19 = best_19 % 19;
+      let scoreLead = (flatScores[2]*20).toFixed(2);
+      let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
+      let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+      if (level == 'kyu') {
+        scoreLead -= (20+goban.komi());
+        scoreLead = scoreLead.toFixed(2);
+        katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+        playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
+      }
+      document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
+      let bestMove = 21 * (row_19+1) + (col_19+1);
+      if (!goban.play(bestMove, computerSide, false)) {
+        if (move != topMoves.length-1) continue;
+        alert('Pass');
+        goban.pass();
+      } goban.refresh(); break;
     }
-    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
-    let bestMove = 21 * (row_19+1) + (col_19+1);
-    if (!goban.play(bestMove, computerSide, false)) {
-      alert('Pass');
-      goban.pass();
-    }
-    goban.refresh();
   } catch (e) {
     console.log(e);
   }

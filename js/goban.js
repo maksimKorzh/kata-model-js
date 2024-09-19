@@ -276,7 +276,7 @@ const Goban = function(params) {
     loadHistoryMove();
   }
 
-  function loadSgf() {
+  function loadSgf(sgf) {
     let sgfLines = sgf.split('\n');
     moves = sgfLines.slice(3, sgfLines.length).join(';').replace(/\s/g, '');
     for (let move of moves.split(';')) {
