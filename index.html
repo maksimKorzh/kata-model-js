@@ -22,7 +22,7 @@
     <button onclick="play()" style="width: 172px; font-size: 30px;">PLAY</button>
     <button onclick="goban.pass(); play();" style="width: 172px; font-size: 30px;">PASS</button>
     <button onclick="goban.undoMove()" style="width: 172px; font-size: 30px;">UNDO</button>
-    <button onclick="play()" style="width: 172px; font-size: 30px;">SAVE</button>
+    <button onclick="downloadSgf()" style="width: 172px; font-size: 30px;">SAVE</button>
   </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -32,8 +32,19 @@
     const goban = new Goban({
       'size': 19,
       'width': 800,
-      'response': function() { play(); }
+      //'response': function() { play(); }
     });
+
+    function downloadSgf() {
+      const element = document.createElement('a');
+      const file = new Blob([goban.exportSgf()], { type: 'text/plain' });
+      element.href = URL.createObjectURL(file);
+      element.download = 'KataNet.sgf';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
   </script>
 </body>
 </html>

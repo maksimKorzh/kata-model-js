@@ -291,6 +291,22 @@ const Goban = function(params) {
     } firstMove();
   }
 
+  function saveSgf() {
+    let sgf = '(;GM[1]FF[4]CA[UTF-8]AP[Kata Model JS]\n';
+    sgf += 'RU[AGA]SZ[19]KM[]TM[600]OT[25/60 Canadian]\n';
+    sgf += 'PW[White]PB[Black]DT[]RE[]\n';
+    for (let item of history.slice(1, history.length)) {
+      let col = item.move % 21;
+      let row = Math.floor(item.move / 21);
+      let color = item.side == BLACK ? 'W' : 'B';
+      let coords = ' abcdefghijklmnopqrs';
+      let move = coords[col] + coords[row];
+      if (move == '  ') sgf += ';' + color + '[]'
+      else sgf += ';' + color + '[' + move + ']';
+    } sgf += ')'
+    return sgf;
+  }
+
   function init() { /* Init goban module */
     let container = document.getElementById('goban');
     canvas = document.createElement('canvas');
@@ -312,7 +328,6 @@ const Goban = function(params) {
       'ko': ko
     });
     moveCount = history.length-1;
-    if (params.sgf) loadSgf(params.sgf);
   }
   
   // PUBLIC API
@@ -320,6 +335,8 @@ const Goban = function(params) {
     init: init(),
     BLACK: BLACK,
     WHITE: WHITE,
+    importSgf: function(sgf) { return loadSgf(); },
+    exportSgf: function() { return saveSgf(); },
     position: function() { return board; },
     setKomi: function(komiVal) { komi = komiVal; },
     komi: function() { return komi; },
