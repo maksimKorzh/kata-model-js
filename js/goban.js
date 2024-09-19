@@ -227,7 +227,7 @@ const Goban = function(params) {
   function loadHistoryMove() {
     let move = history[moveCount];
     board = JSON.parse(move.board);
-    side = (3-move.side);
+    side = move.side;
     ko = move.ko;
     userMove = move.lastMove;
     drawBoard();

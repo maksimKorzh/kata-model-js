@@ -5,6 +5,7 @@ const inputBufferChannels = 22;
 const inputGlobalBufferChannels = 19;
 const global_inputs = new Float32Array(batches * inputGlobalBufferChannels);
 var computerSide = 2;
+var level = 'dan';
 
 // PARSE PARAMS
 const urlParams = new URLSearchParams(window.location.search);
@@ -12,6 +13,7 @@ try {
   setTimeout(function() {
     if (urlParams.get('komi')) goban.setKomi(parseFloat(urlParams.get('komi')));
     goban.handicap(parseInt(urlParams.get('handicap')));
+    level = urlParams.get('level');
   }, 100);
 } catch (e) { console.log(e); }
 
@@ -19,6 +21,10 @@ try {
 function inputTensor() { /* Convert GUI goban.position() to katago model input tensor */
   let katago = computerSide;
   let player = (3-computerSide);
+  if (level == 'kyu') {
+    player = computerSide;
+    katago = (3-computerSide);
+  }
   const bin_inputs = new Float32Array(batches * inputBufferLength * inputBufferChannels);
   for (let y = 0; y < 19; y++) {
     for (let x = 0; x < 19; x++) {
@@ -48,32 +54,32 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
     let prevLoc1 = goban.history()[moveIndex-1].move;
     let x = prevLoc1 % 21;
     let y = Math.floor(prevLoc1 / 21);
-    if (prevLoc1) {bin_inputs[inputBufferChannels * (19 * y + x) + 9] = 1.0; console.log('feature 9');}
+    if (prevLoc1) bin_inputs[inputBufferChannels * (19 * y + x) + 9] = 1.0;
     else global_inputs[0] = 1.0;
     if (moveIndex >= 2 && goban.history()[moveIndex-2].side == katago) {
       let prevLoc2 = goban.history()[moveIndex-2].move;
       let x = prevLoc2 % 21;
       let y = Math.floor(prevLoc2 / 21);
-      if (prevLoc2) { bin_inputs[inputBufferChannels * (19 * y + x) + 10] = 1.0; console.log('feature 10');}
-      else { global_inputs[1] = 1.0; console.log('global 1'); }
+      if (prevLoc2) bin_inputs[inputBufferChannels * (19 * y + x) + 10] = 1.0;
+      else global_inputs[1] = 1.0;
       if (moveIndex >= 3 && goban.history()[moveIndex-3].side == player) {
         let prevLoc3 = goban.history()[moveIndex-3].move;
         let x = prevLoc3 % 21;
         let y = Math.floor(prevLoc3 / 21);
-        if (prevLoc3) {bin_inputs[inputBufferChannels * (19 * y + x) + 11] = 1.0; console.log('feature 11');}
-        else { global_inputs[2] = 1.0; console.log('global 2'); }
+        if (prevLoc3) bin_inputs[inputBufferChannels * (19 * y + x) + 11] = 1.0;
+        else global_inputs[2] = 1.0;
         if (moveIndex >= 4 && goban.history()[moveIndex-4].side == katago) {
           let prevLoc4 = goban.history()[moveIndex-4].move;
           let x = prevLoc4 % 21;
           let y = Math.floor(prevLoc4 / 21);
-          if (prevLoc4) { bin_inputs[inputBufferChannels * (19 * y + x) + 12] = 1.0; console.log('feature 12'); }
-          else { global_inputs[3] = 1.0; console.log('global 3'); }
+          if (prevLoc4) bin_inputs[inputBufferChannels * (19 * y + x) + 12] = 1.0;
+          else global_inputs[3] = 1.0;
           if (moveIndex >= 5 && goban.history()[moveIndex-5].side == player) {
             let prevLoc5 = goban.history()[moveIndex-5].move;
             let x = prevLoc5 % 21;
             let y = Math.floor(prevLoc5 / 21);
-            if (prevLoc5) { bin_inputs[inputBufferChannels * (19 * y + x) + 13] = 1.0; console.log('feature 13'); }
-            else { global_inputs[4] = 1.0; console.log('global 4'); }
+            if (prevLoc5) bin_inputs[inputBufferChannels * (19 * y + x) + 13] = 1.0;
+            else global_inputs[4] = 1.0;
           }
         }
       }
@@ -105,15 +111,16 @@ async function play() { /* Query KataGo network */
     let scoreLead = (flatScores[2]*20).toFixed(2);
     let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
     let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+    if (level == 'kyu') {
+      scoreLead -= (20+goban.komi());
+      scoreLead = scoreLead.toFixed(2);
+      katagoColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+      playerColor = computerSide == goban.BLACK ? 'Black' : 'White';
+    }
     document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
     let bestMove = 21 * (row_19+1) + (col_19+1);
     if (!goban.play(bestMove, computerSide, false)) {
       alert('Pass');
-      console.log('best move:', col_19, row_19);
-      results[0].print();
-      results[1].print();
-      results[2].print();
-      results[3].print();
       goban.pass();
     }
     goban.refresh();
