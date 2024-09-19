@@ -122,7 +122,7 @@ const Goban = function(params) {
     board[sq] = color;
     history.push({
       'ply': moveCount+1,
-      'side': color,
+      'side': (3-color),
       'move': sq,
       'board': JSON.stringify(board),
       'ko': ko
@@ -145,10 +145,21 @@ const Goban = function(params) {
     return true;
   }
 
+  function setHandicap(stones) {
+    if (stones < 0 || stones > 9) return;
+    let handicap = stones;
+    let handicapStones = [88, 100, 340, 352, 214, 226, 94, 346, 220].slice(0, handicap);
+    for (let sq of handicapStones) {
+      goban.play(sq, goban.BLACK);
+      if (sq != handicapStones[handicap-1]) goban.pass();
+      goban.refresh();
+    }
+  }
+
   function pass() {
     history.push({
       'ply': moveCount+1,
-      'side': side,
+      'side': (3-side),
       'move': EMPTY,
       'board': JSON.stringify(board),
       'ko': ko
@@ -294,7 +305,7 @@ const Goban = function(params) {
     drawBoard();
     history.push({
       'ply': 0,
-      'side': WHITE,
+      'side': BLACK,
       'move': EMPTY,
       'board': JSON.stringify(board),
       'ko': ko
@@ -316,6 +327,7 @@ const Goban = function(params) {
     liberties: function() { return liberties; },
     restore: function() { return restoreBoard(); },
     play: function(sq, color, user) { return setStone(sq, color, user); },
+    handicap: function(stones) { return setHandicap(stones); },
     pass: function() { return pass(); },
     refresh: function() { return drawBoard(); },
     undoMove: function() { return undoMove(); },
