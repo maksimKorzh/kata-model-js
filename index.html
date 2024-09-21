@@ -20,7 +20,7 @@
   <div id=goban></div>
   <div style="display: flex;">
     <button onclick="play()" style="width: 114px; font-size: 30px;">MOVE</button>
-    <button onclick="goban.pass(); play();" style="width: 114px; font-size: 30px;">PASS</button>
+    <button onclick="goban.pass();" style="width: 114px; font-size: 30px;">PASS</button>
     <button onclick="goban.undoMove()" style="width: 114px; font-size: 30px;">UNDO</button>
     <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'Edit mode' : 'Play mode';" style="width: 114px; font-size: 30px;">EDIT</button>
     <button onclick="eval();" style="width: 114px; font-size: 30px;">EVAL</button>
