@@ -280,7 +280,6 @@ const Goban = function(params) {
     for (let move of sgf.split(';')) {
       if (move.length) {
         if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { continue; }
-        //if (move.charCodeAt(2) == ']') { pass(); continue; }
         let player = move[0] == 'B' ? BLACK : WHITE;
         let col = move.charCodeAt(2)-97;
         let row = move.charCodeAt(3)-97;
@@ -291,9 +290,7 @@ const Goban = function(params) {
   }
 
   function saveSgf() {
-    let sgf = '(;GM[1]FF[4]CA[UTF-8]AP[Kata Model JS]\n';
-    sgf += 'RU[AGA]SZ[19]KM[]TM[600]OT[25/60 Canadian]\n';
-    sgf += 'PW[White]PB[Black]DT[]RE[]\n';
+    let sgf = '(';
     for (let item of history.slice(1, history.length)) {
       let col = item.move % 21;
       let row = Math.floor(item.move / 21);
