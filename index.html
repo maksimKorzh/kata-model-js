@@ -16,19 +16,23 @@
     }
   </style>
   <div class="container">
-  <div id="stats" style="font-size: 30px; margin-bottom: -20px;">KataNet: b10c128-s1141046784-d204142634</div>
+  <div id="stats" style="font-size: 30px; margin-bottom: -20px;">Play mode</div>
   <div id=goban></div>
   <div style="display: flex;">
-    <button onclick="play()" style="width: 172px; font-size: 30px;">PLAY</button>
-    <button onclick="goban.pass(); play();" style="width: 172px; font-size: 30px;">PASS</button>
-    <button onclick="goban.undoMove()" style="width: 172px; font-size: 30px;">UNDO</button>
-    <button onclick="downloadSgf()" style="width: 172px; font-size: 30px;">SAVE</button>
+    <button onclick="play()" style="width: 114px; font-size: 30px;">MOVE</button>
+    <button onclick="goban.pass(); play();" style="width: 114px; font-size: 30px;">PASS</button>
+    <button onclick="goban.undoMove()" style="width: 114px; font-size: 30px;">UNDO</button>
+    <button onclick="editMode ^= 1; document.getElementById('stats').innerHTML = editMode ? 'Edit mode' : 'Play mode';" style="width: 114px; font-size: 30px;">EDIT</button>
+    <button onclick="eval();" style="width: 114px; font-size: 30px;">EVAL</button>
+    <button onclick="downloadSgf()" style="width: 114px; font-size: 30px;">SAVE</button>
   </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
   <script src="js/goban.js"></script>
   <script src="js/model.js"></script>
   <script>
+    var editMode = 0;
+
     const goban = new Goban({
       'size': 19,
       'width': 800,

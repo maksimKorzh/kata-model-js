@@ -90,7 +90,8 @@ function inputTensor() { /* Convert GUI goban.position() to katago model input t
   return bin_inputs;
 }
 
-async function play() { /* Query KataGo network */
+async function play() { /* Play best move */
+  if (editMode) return;
   document.getElementById('stats').innerHTML = 'KataNet is thinking...';
   computerSide = goban.side();
   const bin_inputs = inputTensor();
@@ -130,6 +131,28 @@ async function play() { /* Query KataGo network */
         goban.pass();
       } goban.refresh(); break;
     }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function eval() { /* Estimate score */
+  document.getElementById('stats').innerHTML = 'KataNet is estimating score...';
+  computerSide = goban.side();
+  const bin_inputs = inputTensor();
+  try {
+    tf.setBackend("cpu");
+    const model = await tf.loadGraphModel("./models/b10c128-s1141046784-d204142634/model.json");
+    const results = await model.executeAsync({
+        "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
+        "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')
+    });
+    let scores = results[2];
+    let flatScores = scores.dataSync(2);
+    let scoreLead = (flatScores[2]*20).toFixed(2);
+    let katagoColor = computerSide == goban.BLACK ? 'Black' : 'White';
+    let playerColor = (3-computerSide) == goban.BLACK ? 'Black' : 'White';
+    document.getElementById('stats').innerHTML = (scoreLead > 0 ? (katagoColor + ' leads by ') : (playerColor + ' leads by ')) + Math.abs(scoreLead) + ' points';
   } catch (e) {
     console.log(e);
   }
