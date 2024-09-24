@@ -111,6 +111,7 @@ async function play() { /* Play best move */
     let topMoves = [];
     for (let move of topPolicies) topMoves.push(flatPolicyArray.indexOf(move));
     for (let move = 0; move < topMoves.length; move++) {
+      if (goban.history().length < 20) move = Math.floor(Math.random() * 3);
       let best_19 = topMoves[move];
       let row_19 = Math.floor(best_19 / 19);
       let col_19 = best_19 % 19;
