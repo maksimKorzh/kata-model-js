@@ -36,6 +36,7 @@ const Goban = function(params) {
 
   // PRIVATE METHODS
   function drawBoard() { /* Render board to screen */
+    cell = canvas.width / size;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     for (let i = 1; i < size-1; i++) {
@@ -303,19 +304,26 @@ const Goban = function(params) {
     return sgf;
   }
 
+  function resizeCanvas() {
+    let offset = params.offset == undefined ? 0 : params.offset;
+    if (window.innerWidth > window.innerHeight) {
+      canvas.width = window.innerHeight - offset; // Desktop
+      canvas.height = canvas.width;
+    } else {
+      canvas.width = window.innerWidth - offset;  // Mobile
+      canvas.height = canvas.width;
+    } drawBoard();
+  }
+
   function init() { /* Init goban module */
     let container = document.getElementById('goban');
     canvas = document.createElement('canvas');
     canvas.style="margin-bottom: -3%;";
     container.appendChild(canvas);
-    canvas.width = params.width;
-    canvas.height = params.width;
     size = params.size+2;
     canvas.addEventListener('click', userInput);
     ctx = canvas.getContext('2d');
-    cell = canvas.width / size;
     clearBoard();
-    drawBoard();
     history.push({
       'ply': 0,
       'side': BLACK,
@@ -324,6 +332,8 @@ const Goban = function(params) {
       'ko': ko
     });
     moveCount = history.length-1;
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
   }
   
   // PUBLIC API
