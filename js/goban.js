@@ -122,6 +122,19 @@ const Goban = function(params) {
     } let old_ko = ko;
     ko = EMPTY;
     board[sq] = color;
+    captures(3 - color, sq);
+    count(sq, color);
+    let suicide = liberties.length ? false : true; 
+    restoreBoard();
+    if (suicide) {
+      board[sq] = EMPTY;
+      ko = old_ko;
+      moveCount--;
+      if (user) alert("Suicide move!");
+      return false;
+    } 
+    side = 3 - side;
+    userMove = sq;
     history.push({
       'ply': moveCount+1,
       'side': (3-color),
@@ -130,20 +143,6 @@ const Goban = function(params) {
       'ko': ko
     });
     moveCount = history.length-1;
-    captures(3 - color, sq);
-    count(sq, color);
-    let suicide = liberties.length ? false : true; 
-    restoreBoard();
-    if (suicide) {
-      board[sq] = EMPTY;
-      ko = old_ko;
-      history.pop();
-      moveCount--;
-      if (user) alert("Suicide move!");
-      return false;
-    } 
-    side = 3 - side;
-    userMove = sq;
     return true;
   }
 
