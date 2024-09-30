@@ -1,7 +1,7 @@
 {
   "name": "Kata Model JS",
   "short_name": "Go",
-  "start_url": "/mobile.html",
+  "start_url": "/kata-model-js/mobile.html",
   "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#000000",
