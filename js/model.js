@@ -97,7 +97,7 @@ async function play() { /* Play best move */
   const bin_inputs = inputTensor();
   try {
     tf.setBackend("cpu");
-    const model = await tf.loadGraphModel("./models/b10c128-s1141046784-d204142634/model.json");
+    const model = await tf.loadGraphModel("./model/b10c128-s1141046784-d204142634/model.json");
     const results = await model.executeAsync({
         "swa_model/bin_inputs": tf.tensor(bin_inputs, [batches, inputBufferLength, inputBufferChannels], 'float32'),
         "swa_model/global_inputs": tf.tensor(global_inputs, [batches, inputGlobalBufferChannels], 'float32')

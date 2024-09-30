@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="user-scalable=0">
+  <link rel="manifest" href="/manifest.json">
   <title>Kata Model JS</title>
 </head>
 <body>
@@ -31,6 +32,15 @@
   <script src="js/goban.js"></script>
   <script src="js/model.js"></script>
   <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+
     var editMode = 0;
 
     const goban = new Goban({
