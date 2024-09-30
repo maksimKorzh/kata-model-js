@@ -3,9 +3,9 @@ self.addEventListener('install', (event) => {
     caches.open('my-app-cache').then((cache) => {
       return cache.addAll([
         '/',
-        '/mobile.html',
-        '/images/icon-192x192.png',
-        '/images/icon-512x512.png'
+        '/kata-model-js/mobile.html',
+        '/kata-model-js/images/icon-192x192.png',
+        '/kata-model-js/images/icon-512x512.png'
       ]);
     })
   );
