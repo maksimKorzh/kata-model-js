@@ -105,7 +105,10 @@ async function play() { /* Play best move */
     let policyTensor = results[1].reshape([-1]);
     let flatPolicyArray = await policyTensor.array();
     let scores = results[2];
-    let flatScores = scores.dataSync(2);
+    let flatScores = scores.dataSync();
+    console.log(flatScores)
+    console.log(flatPolicyArray);
+    console.log(results[1].shape)
     let copyPolicy = JSON.parse(JSON.stringify(flatPolicyArray));
     let topPolicies = copyPolicy.sort((a, b) => b - a).slice(0, 5);
     let topMoves = [];

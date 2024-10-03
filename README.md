@@ -1,5 +1,7 @@
 # Kata Model JS
 Play Go with bare KataGo neural net in web browser
+<br>
+This project is superseded by <a href="https://maksimkorzh.github.io/go/">this one</a>
 
 # Play now
 <a href="https://maksimkorzh.github.io/kata-model-js/?handicap=0&komi=6.5&level=dan">KataNet, around 2 Dan strength, no handicap</a><br>
